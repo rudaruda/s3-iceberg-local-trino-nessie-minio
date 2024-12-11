@@ -1,177 +1,128 @@
 # Iceberg Local com Trino + Nessie + MinIO
-Este projeto apresenta uma alernativa para trabalhar com arquitetura de Big Data e arquivos S3 localmente.
+Neste projeto apresento uma alternativa para simular arquitetura de Big Data e arquivos S3 localmente.  
+
+Para que fique claro sobre a extenção flexibilidade da solução, adicionando ainda nesse projeto endpoints no FastAPI pra execução dos Métodos e um tutorial para executar querys diretamente no SQLPad.
 
 O consumo de dados no formato **S3 Iceberg** que é praticamente uma solução absoluta quando se trata de armazenamento e leitura de arquivos distribuídos em cenários de alto volume de dados.
 
 Entretando para economizar em pesquisa em desenvolvimento, existe hoje alternativas para disponibilizar S3 Iceberg localmente com leitura de dados em SQL.
 
-> Claro que cada solução e ferramenta possuem caracteristicas únicas que não serão identificas á plataforma AWS, havendo até algums desvantagens que detalho mais para frente. 
+> Claro que cada solução e ferramenta possuem caracteristicas únicas que não serão identificas á AWS, havendo até algums desvantagens que detalho mais para frente. 
 
 Mesmo assim, vejo aqui já um grande avanço nesse sentido. Acredito que no futuro, teremos ainda mais soluções OPEN SOURCE padronizadas (próximas) das soluções de mercado existentes para atender aos requisitos de migração e multi-cloud.
 
-- ##### Como instalar
-  - Execue o arquivo docker-compose.yaml na raiz do projeto. No caso eu fiz uso do PODMAN _(com docker também funciona)_:
-`podman-compose up`
+### Como instalar
+* Necessário ter Docker e Docker-compose (ou Podman + Podman Compose) instalado
+* Utilizar o comando `docker-compose up` ou `podman-compose up` no diretório do repositório
+* Aplicação roda em [http://0.0.0.0:8000/](http://0.0.0.0:8000/) ou [http://localhost:8000/](http://localhost:8000/) por padrão
+* Verificar da API [documentação](http://localhost:8000/docs): ([http://localhost:8000/docs](http://localhost:8000/docs))
 
-  - Habilite o ambiente virtual do projeto do Python na raiz do projeto:
-`source .venv/bin/activate`
-  - Instale as biblitecas necessárias:
-`pip install -r requirements.txt`
-  - Execute o projeto python na pasta **src** somente após imagem do docker-compose estiver ativa.
-`python src/etl_s3_iceberg.py`
+#### Serviços instalados com docker
+  - **Trino**: http://localhost:8080/
+    > _user: `admin`_
+  - **Nessie**: http://localhost:19120
+    > _user: `admin`, password: `admin`_
+  - **MinIO** http://localhost:9001/
+    > _user: `admin`, password: `admin`_
+  - **SQLPad**: http://localhost:3000/
+    > _user**: `admin`, password: `admin`_
+  - **FastAPI**: http://localhost:8000/
+    > _no autentication_
 
-- ##### Monitorando os serviços ativos
-  - Trino: http://localhost:8080/
-    _user: admin_
-  - Nessie: http://localhost:19120
-    _user: admin, password: password_
-  - MinIO http://localhost:9001/
-    _user: admin, password: password_
-
-## Arquitetura
+# Arquitetura
 ![elementos de arquitetura](./images/arquitetura_s3_iceberg_trino.png)
 
-Basicamente o TRINO é nossa grande estrela como Query Processor de Big Data. Ele se conecta ao MinIO para persistir os dados em formato S3 (armazenamento distribuído) e ao Nessie que gerencia o catalogo dos arquivos armazenados em formato Iceberg.
-As plataformas/ferramentas que manipulam os dados também devem se conectar ao TRINO para fazer uso da arquitura de Big Data no fomato de arquivos S3 Iceberg.
+O **TRINO** é a grande estrela como **Query Processor de Big Data**. Ele se conecta ao **MinIO** para persistir os dados em formato **S3 (armazenamento distribuído)** e o **Nessie** que gerencia o **catalogo** dos arquivos armazenados em formato Iceberg.
+As plataformas/ferramentas que manipulam os dados (**PySpark** e **SQLPad**) também devem se conectar ao **TRINO** para fazer uso da arquitura de Big Data no fomato de arquivos S3 Iceberg.
 E assim, temos de modo democatico recursos do "S3 Iceberg" localmente.
 
-- #### MinIO
-  MinIO é uma solução robusta de armazenamento de objetos compatível com o protocolo S3 da AWS. Ele é projetado para armazenar grandes quantidades de dados não estruturados, como arquivos de mídia, logs, backups e dados analíticos.
-- #### Nessie
-  Aqui temos uma solução de catálogo de dados que oferece versionamento para dados armazenados em data lakes e data warehouses auxiliando no armazenamento de arquivos no formato Iceberg.Permite criar branches e tags para dados, ajudando também visualização em relação a organização dos catalogos, schemas e tabelas.
-- #### Trino
-  Esse é meu preferido. Mecanisco de consulta de SQL distribuído, permite eecutar consultar em tempo real sobre diversas fontes de dados NoSQL, bastando apenas adiocionar novos catalogos para acessar novas origens.
+Como o projeto também esta em **Docker** com algum ajuste é totalmente possível escalar para kubernets.
 
-#### Resumo do Conjunto
-A reunião desses 3 principais componentes nos permite "simular" o consumo de ambiente de armazenamento e processamento distribuído localmente (com menos recursos).
-No meu caso, por exemplo, minha máquina tinha apenas 8GB de RAM. E fui possivel realizar testes de menor escala para testar a tecnologia de processamento distribuído que geralmente exige um hardware mais pesado.
+| :city_sunrise: |Aplicação| O que é|
+|-----|:-----:|-------------|
+| <img src="images/minio_icon.png" alt="minio ico" style="width:200px; height:100%"> | **[MinIO](https://min.io/docs/minio/container/operations/installation.html)**| Solução robusta de armazenamento de objetos compatível com o protocolo S3 da AWS. Ele é projetado para armazenar grandes quantidades de dados não estruturados, como arquivos de mídia, logs, backups e dados analíticos.|
+| <img src="images/nessie_icon.png" alt="nessie ico" style="width:200px; height:100%"> | **[Nessie](https://projectnessie.org/)** | Aqui temos uma solução de catálogo de dados que oferece versionamento para dados armazenados em data lakes e data warehouses auxiliando no armazenamento de arquivos no formato Iceberg.Permite criar branches e tags para dados, ajudando também visualização em relação a organização dos catalogos, schemas e tabelas. |
+| <img src="images/trino_icon.png" alt="trino ico" style="width:200px; height:100%"> | **[Trino](https://trino.io/docs/current/installation/containers.html)** |  Essa é a estrela do show. Mecanisco de consulta de SQL distribuído, permite executar consultar em tempo real sobre diversas fontes de dados NoSQL, bastando apenas adiocionar novos catalogos para acessar novas origens. |
+| <img src="images/fastapi_icon.png" alt="fastapi ico" style="width:200px; height:100%"> | **[FastAPI](https://fastapi.tiangolo.com/#example)** | Framework Python, usado para criar APIs RESTful com facilidade e velocidade. Suporte a validação automática de dados |
+| <img src="images/pyspark_icon.png" alt="pyspark ico" style="width:200px; height:100%"> | **[PySpark](https://spark.apache.org/docs/latest/api/python/index.html)** | Interface Python para o Apache Spark, usada para processamento distribuído de grandes volumes de dados em cluster |
+| <img src="images/sqlpad_icon.png" alt="sqlpad ico" style="width:200px; height:100%"> | **[SQLPad](https://getsqlpad.com/en/introduction/)** | Facilita a execução de consultas SQL em bancos de dados, tem diversos conectores. Permite colaboração de querys e dashborads de maneira simples via interface web|
+| <img src="images/docker_icon.png" alt="docker ico" style="width:200px; height:100%"> | **[Docker](https://www.docker.com/get-started/)** | Plataforma para criar, distribuir e executar aplicações em contêineres isolados.|
+| <img src="images/podman_icon.png" alt="podman ico" style="width:200px; height:100%"> | **[Podman](https://podman.io/get-started)** | Tem o mesmo objetivo do Docker, incluive possui alta compatibilidade (mesmos comandos) que o Docker, porém consume menos recursos de máquina no desenvolvimento local ***(super recomendo!)*** :rocket:.|
 
-### Demais protagonistas
-Sem duzir o prestigio do trio (MinIO+Nessie+Trino), nesse projeto fiz uso das biblitecas em Python: PySpark, PyTrino, SqlAlquemy. Elas executam a manipulação dos dados.
-Outra solução que foi totalmente relevante para o desenvolvimento desse projeto foi o **PODMAN**. Ele é uma alernativa ao *DOCKER* para levantar imagens de *DOCKER* com menos recurso de máquina.
-Claro que existe diferença de arquitetura entre PODMANxDOCKER, porém, para desenvolvimento local, percebi muita vantagem no uso **PODMAN** como falei minha máquina tem apenas 8GB. 
+#### Resumo do conjunto...
+A reunião dos 3 principais componentes (**Trino** + **Nessie** + **MinIO**) nos permite *"simular"* o de ambiente de armazenamento e processamento distribuído localmente (com menos recursos).
+No meu caso, por exemplo, minha máquina tinha apenas 8GB de RAM. E foi possível realizar testes de menor escala para experimentar a tecnologia de processamento distribuído que geralmente exige um hardware mais pesado.
 
-# Entregas do Objetivo
-##### 1. Uso dados de um banco de dados SQLITE
-  ![evidencia SQLITE 01: DB](./images/01-sqlite-db.png)
-  Arquivo SQL de produção SQLITE
-  `v4_eng_s3_iceberg/src/sqlite-files/vendas.sql`
-  ![evidencia SQLITE 02: SQL](./images/01-sqlite-sql.png)
-  No PySpark foi preciso fazer uso de JDBC próprio para o SQlite, disponível em: https://github.com/xerial/sqlite-jdbc/releases
-```py
-    spark = SparkSession.builder\
-    .config("spark.log.level", "ERROR")\
-    .config("spark.jars", f"{SQLITE_JDBC}")\
-    .appName("SQLITE_SPARK")\
-    .getOrCreate()
-```
+#### Demais protagonistas
+Fiz uso das biblitecas em Python: FastAPI, PySpark, SqlAlquemy e PyTrino. Elas executam a manipulação dos dados.
+**PODMAN** foi totalmente relevante para esse projeto. Uma alernativa ao **DOCKER** instalar container com menos recurso de máquina que o Docker. Claro que existe *diferença de arquitetura entre PODMAN x DOCKER*, porém, para desenvolvimento local, percebi vantagem considerável no uso **PODMAN**. Como falei minha máquina tem apenas 8GB.
+**SQLPad** ajuda a apresentar um caso de uso mais direto e simples de como consumir a arquitetura de Big Data com Trino.
 
-   Script de carregamento dos dados, foi preciso colocar `customSchema` para tratar a coluna de `data_venda`.
-```py
-df_bronze = spark.read\
-    .format('jdbc')\
-    .option("customSchema", "id INTEGER, data_venda STRING, id_produto INTEGER, id_cliente INTEGER, quantidade INTEGER, valor_unitario DECIMAL(10,2), valor_total DECIMAL(10,2), id_vendedor INTEGER, regiao VARCHAR(50)")\
-    .options(driver="org.sqlite.JDBC", dbtable=TB_VENDAS, url=f"jdbc:sqlite:{SRC_DIR}/sqlite-files/vendas.db")\
-    .load() 
-```
+## Como usar...
 
-##### 2. Tratar campo de data, total vendas por dia e remoção de duplicados
-a) Tratando campo de data_venda:
-| antes | depois |
-| ----- | ------ |
-|![evidencia 02 DATA_VENDA antes](./images/02-data-before.png)| ![evidencia 02 DATA_VENDA depois](./images/02-data-after.png) |
-| data_venda tipo **String** | data_venda tipo **Date** |
+1. **Instalar a imagem**
+  Estando no diretório do projeto, com Docker:
+   ```
+   docker-compose up
+   ```
+   ... ou Podman:
+   ```
+   podman-compose up
+   ```
 
+2. **Leia a documentação em Swagger**
+  Documentação: [htpp://localhost:8000/docs](htpp://localhost:8000/docs)
 
-Script para tratamento da coluna data_venda:
-```py
-df_prata = df_bronze.withColumn("data_venda", F.to_date("data_venda", "yyyy-MM-dd")) 
-```
+3. **Execute os testes disponiveis no Swagger**
+   É essencial ter resultado como "TUDO OK""
+   [IMAGEM GIF dos testes]
 
-b) Relatório total de vendas por dia:
-![evidencia 02 TOTAL DIA](./images/02-total-dia.png)
+4. **Uso com SQLPad**
+   Acesse http://localhost:3000
+   > user `admin`, passord: `admin`
+   
+   [GIF]
+   
+   E execute  a query de para criar o Schema e Tabela com particionamento em ANO, MES e DIA em formato S3 Iceberg.
+   
+   A query já esta pronta e também irá acrescentar 20 registros na tabela "tb_vendas".
 
-Script para geração do relatório:
-```py
-(df_prata
-    .groupBy("data_venda")
-    .agg(F.count("*").alias("# QTD"), F.sum("valor_total").alias("R$ TOTAL"))
-    .orderBy("data_venda")
-    .show())
-```
+   O script SQL já esta cadastrado no projeto. Basta ir no menu "Querys" e selecionar: "1. Query START!".
+   
+   Para executar, clique no botão "RUN" na parte superior a direita.
+   [GIF]
 
-c) Script para remoção de duplicados:
-```py
-df_prata = df_prata.dropDuplicates(['id'])
-```
+   **Visualize o relatório**
+   O script do relatório de vendas por dia também já esta disponivel no projeto.
+   Agora selecione a query: "2. Vendas por dia".
+   [GIF]
 
-##### 3. Carregamento dos dados para S3 Iceberg
-![evidencia 03 S3 Iceberg](./images/03-s3-iceberg.png)
-`http://localhost:19120/content/main/db/tb_vendas`
-No Nessie conseguir visualizar claramente o catalogo utlizado e formado S3 Iceberg.
-![evidencia 03 S3 Files](./images/03-s3-files.png)
-No MinIO visulizamos claramente a distribuição da partição dos arquivos em ANO, MÊS e DIA.
-Foram criadas duas funcões para "simular" essa ação:
-`BulkInsertTRINO()` que realiza o insert do dado no formato S3 Iceberg Parquet, por batch, para gerenciar perfomance de infra.
-`list_to_sqlvalues` que recebe o dado bruto e o trata para prevenir eventutais problemas que o formato PARQUET exige.
-```sql
-CREATE TABLE IF NOT EXISTS iceberg.db.tb_vendas (
-	dt_processamento DATE,
-	year_dt_venda INTEGER NOT NULL,
-	month_dt_venda INTEGER NOT NULL,
-	day_dt_venda INTEGER NOT NULL,
-	id INTEGER NOT NULL, 
-	data_venda DATE NOT NULL, 
-	id_produto INTEGER NOT NULL, 
-	id_cliente INTEGER NOT NULL, 
-	quantidade INTEGER NOT NULL, 
-	valor_unitario DECIMAL(10,2), 
-	valor_total DECIMAL(10,2), 
-	id_vendedor INTEGER NOT NULL, 
-	regiao VARCHAR(50)
-)
-WITH (
-	format = 'PARQUET',
- 	partitioning=ARRAY['year_dt_venda','month_dt_venda','day_dt_venda'],
-	sorted_by = ARRAY['year_dt_venda','month_dt_venda','day_dt_venda']
-)
-```
-O Particionamento da tabela acontece na criação da tabela. No caso precisei fazer uso de um artificio técnico para reproduzir o particionamento por ANO, MÊS e DIA. Criando 3 colunas a mais fazendo uso especificamente delas para deixar a participação no formato desejado. 
-No S3 AWS esse artificio é desnecessário, lá é possivel realizar essa indexação com apenas uma coluna de data.
+5. **Monitore as querys executadas no Trino**
+   Acesse http://localhost:8080
+   > user `admin`
+   
+   [IMAGEM]
 
-##### 4. TOTAL DE VENDA POR MÊS (query S3 Athena)
-![evidencia 04 Query Athena](./images/04-query-athena.png)
-```sql
-WITH cte AS (
-    SELECT 
-        year_dt_venda
-        ,month_dt_venda
-        ,valor_total, quantidade
-    FROM iceberg.db.tb_vendas
-)
-SELECT
-    CONCAT(CAST(year_dt_venda as varchar),'-',CAST(month_dt_venda as varchar)) AS ano_mes
-    ,SUM(valor_total) AS total_vl
-    ,SUM(quantidade) AS total_qtd
-    ,SUM(valor_total)/SUM(quantidade) AS tkt_medio
-FROM cte
-GROUP BY year_dt_venda, month_dt_venda
-ORDER BY year_dt_venda desc, month_dt_venda desc
-```
-O AWS Athena realiza a cobrança pela transferencia do dado de saída. Logo fazer do `WITH cte AS(` para higienizar o dado antes da saída final é uma boa prática que pode trazer economia para os processos.
+6. **Visualize o catalogo Iceberg gerado pelo Nessie**
+   Acesse http://localhost:17070
+   > user `admin`, password: `admin`
+   
+   [GIF]
+   ![evidencia 03 S3 Iceberg](./images/03-s3-iceberg.png)
+   `http://localhost:19120/content/main/db/tb_vendas`
+7. **Visualize os arquivos gerado no S3 pelo MinIO**
+   > user `admin`, password: `admin`
+   
+   O observe que o particionamento é feito por separação de diretórios em ANO, MÊS e DIA
+   ![evidencia 03 S3 Files](./images/03-s3-files.png)
 
-##### 5. Visualização
-![evidencia 05 dashboard](./images/05-dashboard.png)
-Produzi o dashboard no Metabase. Nele podemos ver que Abril foi um dos melhores meses de faturamento. Que o "Produto 101" é o mais vendido, que o "Vendedor 11" é nosso melhor comercial.
-A região que mais vende é a Leste e que a menos vende é Norte. No último quarter do ano de 2023 a região Leste bateu recorde de vendas.
-![evidencia 05 metabase](./images/05-metabase.png)
-A escolha do Metabase como ferramenta de analitics foi pela interfacie amigavel e facilidade de tirar insigths. Não chega a ser uma ferramenta de advanced-analitcs, mas cumpre bem a missão de fazer o simples bem-feito.
 
 ## Conclusão
-Como nem tudo são flores... Não foi possível conectar o SPARK diretamente ao NESSIE+MINIO (o que traria maior performance). Embora exista documentação na página dos desenvolvedore, depois de muitos testes *(acredite!)*. Concluí que até pode ser uma possíbilidade, entretanto no ambiente local com praticamente 1 core executando em cada aplicação e poquissíma mémoria não foi possivel os demais experimentar cenários com hardware mais potente.
+Como nem tudo são flores... Não foi possível conectar o SPARK diretamente ao NESSIE+MINIO (o que traria maior performance). Embora exista documentação na página dos desenvolvedore. Depois de muitos testes *(acredite! muitos!)*. Concluí que até pode ser uma possíbilidade, entretanto no ambiente local com praticamente 1 core executando em cada aplicação e poquissíma mémoria para esse tipo de aplicação, não foi possivel experimentar os demais cenários com hardware mais potente.
 A pesquisa sobre a solução do S3 iceberg num ambiente local foi que mais me consumiu tempo e esforço. Principalmente porque as ferramentas OPEN SOURCE disponíveis ainda não estão complementa maduradas e são promissoras. Porém ainda existem muitos bugs a serem corrigidos e recursos a serem desenvovidos por isso o uso delas deve ser com cautela. 
-Fiquei com desejo de colocar mais diagramas de arquietura com detalhes de cada etapa de conectivide, porém o tempo não me permitiu.
-Me diverti, penso que é conhecimento rico que provoca os pensamentos para futuros esforços de migração de dados considerando o multi-cloud.
+Me diverti! Penso que é conhecimento rico que me provoca pensar em futuros esforços como o de migração de dados considerando o multi-cloud.
+
+~~Colocar mais diagramas de arquietura com detalhes de cada etapa de conectivide.~~
 
 ### References
 - https://medium.com/@faruk13/alpine-slim-bullseye-bookworm-noble-differences-in-docker-images-explained-d9aa6efa23ec

@@ -1,14 +1,20 @@
 {
     "id": "trino-seed-query-2",
-    "name": "2. Query for CONSULT",
+    "name": "2. Total de vendas por dia",
     "connectionId": "trinoex",
     "queryText": "SELECT data_venda, sum(quantidade) AS qtd FROM iceberg.db.tb_vendas\nGROUP BY 1\nGROUP BY 1;",
-    "chart": {
-        "chartType": "kind-of-chart",
-        "fields": {
-          "barlabel": "data_venda",
-          "barvalue" : "qtd"
-        }
+    "tags": ["vendas", "dashboard"],
+    "chartConfiguration": {
+      "chartType": "bar",
+      "fields": {
+        "x": "data_venda",
+        "y": "qtd"
+      },
+      "options": {
+        "title": "Vendas por Categoria",
+        "xAxisLabel": "Categoria",
+        "yAxisLabel": "Total de Vendas"
+      }
     },
     "createdBy": "admin",
     "acl": [
