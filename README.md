@@ -31,7 +31,7 @@ Mesmo assim,, vejo aqui já um grande avanço nesse sentido. Acredito que no fut
     _user: admin, password: password_
 
 ## Arquitetura da solução
-![elementos de arquitetura](./images/S3_ICEBERG_LOCAL.jpg)
+![elementos de arquitetura](./images/arquitetura_s3_iceberg_trino.png)
 
 Basicamente as plataformas/ferramentas que manipulam os dados se conectam com Trino. Esse por sua vez consegue habilita o acesso demócrático aos recursos do Nessie + MinIO que nos prove recurso do S3 Iceberg Localmente.
 
@@ -173,3 +173,25 @@ Como nem tudo são flores... Não foi possível conectar o SPARK diretamente ao 
 A pesquisa sobre a solução do S3 iceberg num ambiente local foi que mais me consumiu tempo e esforço. Principalmente porque as ferramentas OPEN SOURCE disponíveis ainda não estão complementa maduradas e são promissoras. Porém ainda existem muitos bugs a serem corrigidos e recursos a serem desenvovidos por isso o uso delas deve ser com cautela. 
 Fiquei com desejo de colocar mais diagramas de arquietura com detalhes de cada etapa de conectivide, porém o tempo não me permitiu.
 Me diverti, penso que é conhecimento rico que provoca os pensamentos para futuros esforços de migração de dados considerando o multi-cloud.
+
+### References
+- https://medium.com/@faruk13/alpine-slim-bullseye-bookworm-noble-differences-in-docker-images-explained-d9aa6efa23ec
+- https://getsqlpad.com/en/configuration/?id=backend-database-management#application-configuration-general
+
+## How install
+- podman build -t python-alpine .
+  * -t atrituto para informar a tag da imagem
+- podman run -it python-alpine
+  -it atriubto para ser interativo
+- podman run -p 8000:8000 --replace --name python-alpine python-alpine
+  -relace substitui o container caso já existe laguma com esse nome
+
+
+## Monitore
+- podman stats -a --no-stream 
+
+#### Manutenção of container
+podman ps -a
+podman logs <container_id>
+
+

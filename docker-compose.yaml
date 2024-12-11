@@ -1,24 +1,30 @@
 version: "3"
 
 services:
+
+  python-alpine:
+    container_name: python-alpine
+    build: ./
+    working_dir: /code
+    volumes:
+      - .:/code
+    #command: ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+    env_file:
+      - .env
+    networks:
+      - backend
+    ports:
+      - 8000:8000
+    environment:
+      - ENVIRONMENT=dev
   # nessie catalog
   nessie:
     image: projectnessie/nessie
     container_name: nessie
     networks:
-      iceberg-nessie-net:
+      backend:
     ports:
       - 19120:19120
-  # trino query processor
-  trino:
-    image: trinodb/trino
-    container_name: trino
-    networks:
-      iceberg-nessie-net:
-    ports:
-      - 8080:8080
-    volumes:
-      - "./trino-files/catalog/iceberg.properties:/etc/trino/catalog/iceberg.properties"
   # minio storage and storage manager
   storage:
     image: minio/minio
@@ -30,7 +36,7 @@ services:
       - MINIO_REGION_NAME=us-east-1
       - MINIO_REGION=us-east-1
     networks:
-      iceberg-nessie-net:
+      backend:
     ports:
       - 9001:9001
       - 9000:9000
@@ -42,7 +48,7 @@ services:
     image: minio/mc
     container_name: mc
     networks:
-      iceberg-nessie-net:
+      backend:
         aliases:
           - minio.storage
     environment:
@@ -60,5 +66,62 @@ services:
       /usr/bin/mc policy set public minio/iceberg;
       tail -f /dev/null
       " 
+  # trino query processor
+  trino:
+    image: trinodb/trino
+    container_name: trino
+    networks:
+      backend:
+    ports:
+      - 8080:8080
+    volumes:
+      - ./trino-data/catalog/iceberg.properties:/etc/trino/catalog/iceberg.properties
+      - ./trino-data/config/log.properties:/etc/trino/log.properties
+      - ./trino-data/config/jvm.config:/etc/trino/jvm.config
+      - ./trino-data/config/config.properties:/etc/trino/config.properties
+      # TRY EXEC FILE .SH... after serivice TRINO activate... but not works
+      #- ./trino-data/sql_start.sh:/tmp/sql_start.sh
+      #- ./trino-data/sql_start.sql:/tmp/sql_start.sql
+      #- ./trino-data/wait-for-it.sh:/tmp/wait-for-it.sh
+      #command: /bin/sh -c "until curl -s http://trino:8080/v1/info | grep 'healthy'; do echo 'Aguardando o serviço...'; sleep 5; done; chmod +x /tmp/sql_start.sql /tmp/sql_start.sh; /tmp/sql_start.sh && echo 'Script executado com sucesso!'"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://trino:8080/v1/info"]
+      # test: ["CMD", "nc", "-z", "localhost", "8080"] # outra maneira
+      interval: 15s
+      retries: 3
+      start_period: 15s
+      timeout: 10s
+    depends_on:
+      - nessie
+  # SQLPad web sql manager for big data
+  sqlpad:
+    image: sqlpad/sqlpad
+    container_name: sqlpad
+    networks:
+      backend:
+    ports:
+      - '3000:3000'
+    environment:
+      SQLPAD_ADMIN: 'admin'
+      SQLPAD_ADMIN_PASSWORD: 'admin'
+      SQLPAD_APP_LOG_LEVEL: warn
+      SQLPAD_WEB_LOG_LEVEL: warn
+      SQLPAD_SEED_DATA_PATH: /etc/sqlpad/seed-data
+      # Connector TRINO
+      SQLPAD_CONNECTIONS__trinoex__name: Trino 01
+      SQLPAD_CONNECTIONS__trinoex__driver: trino
+      SQLPAD_CONNECTIONS__trinoex__host: trino
+      SQLPAD_CONNECTIONS__trinoex__username: admin
+      SQLPAD_CONNECTIONS__trinoex__catalog: iceberg
+      #SQLPAD_CONNECTIONS__trinoex__port: 8080
+      #SQLPAD_CONNECTIONS__trinoex__schema: iceberg
+    volumes:
+      - ./sqlpad-data:/etc/sqlpad/seed-data
+    #depends_on:
+    #  trino:
+    #    condition: service_started
+
+
 networks:
-  iceberg-nessie-net: 
+  backend:
+    driver: bridge
