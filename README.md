@@ -1,15 +1,13 @@
-Teste realizado! [* voltar para o objetivo do teste](../README.md)
+# Iceberg Local com Trino + Nessie + MinIO
+Este projeto apresenta uma alernativa para trabalhar com arquitetura de Big Data e arquivos S3 localmente.
 
----------
+O consumo de dados no formato **S3 Iceberg** que é praticamente uma solução absoluta quando se trata de armazenamento e leitura de arquivos distribuídos em cenários de alto volume de dados.
 
-# ETL com Spark S3 Iceberg Local (MinIO+Nessie+Trino)
-Foquei no consumo de dados no formato **S3 Iceberg** que é praticamente uma solução absoluta quando se trata de armazenamento e leitura em cenários de altíssimo volume de dados.
+Entretando para economizar em pesquisa em desenvolvimento, existe hoje alternativas para disponibilizar S3 Iceberg localmente com leitura de dados em SQL.
 
-Entretando para economizar em pesquisa em desenvolvimento, temos hoje alternativas para "subir" S3 Iceberg localmente.
+> Claro que cada solução e ferramenta possuem caracteristicas únicas que não serão identificas á plataforma AWS, havendo até algums desvantagens que detalho mais para frente. 
 
->Claro que cada solução e ferramenta possuiram especificidades, ou seja, caracteristicas únicas que não serão identificas á plataforma da AWS. Havendo até algums desvantagens que detalho final. 
-
-Mesmo assim,, vejo aqui já um grande avanço nesse sentido. Acredito que no futuro, teremos ainda mais soluções OPEN SOURCE padronizadas (próximas) das soluções de mercado existentes para atener aos requisitos de migração e multi-cloud.
+Mesmo assim, vejo aqui já um grande avanço nesse sentido. Acredito que no futuro, teremos ainda mais soluções OPEN SOURCE padronizadas (próximas) das soluções de mercado existentes para atender aos requisitos de migração e multi-cloud.
 
 - ##### Como instalar
   - Execue o arquivo docker-compose.yaml na raiz do projeto. No caso eu fiz uso do PODMAN _(com docker também funciona)_:
@@ -30,11 +28,12 @@ Mesmo assim,, vejo aqui já um grande avanço nesse sentido. Acredito que no fut
   - MinIO http://localhost:9001/
     _user: admin, password: password_
 
-## Arquitetura da solução
+## Arquitetura
 ![elementos de arquitetura](./images/arquitetura_s3_iceberg_trino.png)
 
-Basicamente as plataformas/ferramentas que manipulam os dados se conectam com Trino. Esse por sua vez consegue habilita o acesso demócrático aos recursos do Nessie + MinIO que nos prove recurso do S3 Iceberg Localmente.
-
+Basicamente o TRINO é nossa grande estrela como Query Processor de Big Data. Ele se conecta ao MinIO para persistir os dados em formato S3 (armazenamento distribuído) e ao Nessie que gerencia o catalogo dos arquivos armazenados em formato Iceberg.
+As plataformas/ferramentas que manipulam os dados também devem se conectar ao TRINO para fazer uso da arquitura de Big Data no fomato de arquivos S3 Iceberg.
+E assim, temos de modo democatico recursos do "S3 Iceberg" localmente.
 
 - #### MinIO
   MinIO é uma solução robusta de armazenamento de objetos compatível com o protocolo S3 da AWS. Ele é projetado para armazenar grandes quantidades de dados não estruturados, como arquivos de mídia, logs, backups e dados analíticos.

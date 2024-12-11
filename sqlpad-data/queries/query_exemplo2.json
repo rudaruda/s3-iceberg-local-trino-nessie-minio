@@ -1,0 +1,24 @@
+{
+    "id": "trino-seed-query-2",
+    "name": "2. Query for CONSULT",
+    "connectionId": "trinoex",
+    "queryText": "SELECT data_venda, sum(quantidade) AS qtd FROM iceberg.db.tb_vendas\nGROUP BY 1\nGROUP BY 1;",
+    "chart": {
+        "chartType": "kind-of-chart",
+        "fields": {
+          "barlabel": "data_venda",
+          "barvalue" : "qtd"
+        }
+    },
+    "createdBy": "admin",
+    "acl": [
+      {
+        "userEmail": "admin",
+        "write": true
+      },
+      {
+        "groupId": "__EVERYONE__",
+        "write": true
+      }
+    ]
+  }
