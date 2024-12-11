@@ -1,4 +1,4 @@
-# Iceberg Local com Trino + Nessie + MinIO
+# Iceberg local com Trino + Nessie + MinIO
 Neste projeto apresento uma alternativa para simular arquitetura de Big Data e arquivos S3 localmente.  
 
 Para que fique claro sobre a extenção flexibilidade da solução, adicionando ainda nesse projeto endpoints no FastAPI pra execução dos Métodos e um tutorial para executar querys diretamente no SQLPad.
@@ -142,13 +142,13 @@ Me diverti! Penso que é conhecimento rico que me provoca pensar em futuros esfo
 
 #### Comandos de container com PODMAN
 - podman build -t python-alpine .
-  * -t atrituto para informar a tag da imagem
+  * Constroi imagem a partir de um arquivo docker: `-t` atributo para informar a tag da imagem
 - podman run -it python-alpine
-  * -it atriubto para ser interativo
+  * Executa a imagem de forma interativa: `-it` atributo para ser interativo
 - podman run -p 8000:8000 --replace --name python-alpine python-alpine
-  * -relace substitui o container caso já existe laguma com esse nome
+  * Executa a imagem: `-relace` substitui o container caso já existe algum com o mesmo nome, `--name` define o nome do container
 - podman stats -a --no-stream 
-  * monitora os containers ativos
+  * Monitora os containers ativos: `-a` todos, `--no-stream`, relatório statico.
 - podman ps
   * lista container disponíveis
 - podman logs <container_id>
