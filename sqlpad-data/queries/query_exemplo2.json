@@ -1,21 +1,9 @@
 {
     "id": "trino-seed-query-2",
-    "name": "2. Total de vendas por dia",
+    "name": "2. Insert TABLE",
     "connectionId": "trinoex",
-    "queryText": "SELECT data_venda, sum(quantidade) AS qtd FROM iceberg.db.tb_vendas\nGROUP BY 1\nGROUP BY 1;",
-    "tags": ["vendas", "dashboard"],
-    "chartConfiguration": {
-      "chartType": "bar",
-      "fields": {
-        "x": "data_venda",
-        "y": "qtd"
-      },
-      "options": {
-        "title": "Vendas por Categoria",
-        "xAxisLabel": "Categoria",
-        "yAxisLabel": "Total de Vendas"
-      }
-    },
+    "queryText": "INSERT INTO iceberg.db.tb_vendas (\n  dt_processamento  ,year_dt_venda  ,month_dt_venda  ,day_dt_venda\n  ,id, data_venda, id_produto, id_cliente, quantidade, valor_unitario, valor_total, id_vendedor, regiao\n)\nVALUES (DATE '2024-01-01', 2023, 7, 13, 1, DATE '2023-07-13', 108, 1820, 8, 50.64, 405.12, 2, 'Centro'),\n (DATE '2024-01-01', 2023, 7, 30, 2, DATE '2023-07-30', 104, 1290, 8, 35.21, 281.68, 18, 'Oeste'),\n (DATE '2024-01-01', 2023, 9, 13, 3, DATE '2023-09-13', 102, 1078, 4, 31.20, 124.80, 7, 'Centro'),\n (DATE '2024-01-01', 2023, 5, 15, 4, DATE '2023-05-15', 101, 1958, 8, 63.33, 506.64, 14, 'Leste'),\n (DATE '2024-01-01', 2023, 3, 22, 5, DATE '2023-03-22', 107, 1891, 1, 45.58, 45.58, 7, 'Leste'),\n (DATE '2024-01-01', 2023, 2, 20, 6, DATE '2023-02-20', 101, 1733, 6, 66.55, 399.30, 3, 'Oeste'),\n (DATE '2024-01-01', 2023, 11, 24, 7, DATE '2023-11-24', 106, 1115, 6, 70.34, 422.04, 19, 'Centro'),\n (DATE '2024-01-01', 2024, 4, 11, 8, DATE '2023-04-11', 109, 1340, 9, 49.69, 447.21, 12, 'Norte'),\n (DATE '2024-01-01', 2023, 10, 8, 9, DATE '2023-10-08', 104, 1412, 1, 68.71, 68.71, 11, 'Oeste'),\n (DATE '2024-01-01', 2023, 2, 2, 10, DATE '2023-02-02', 106, 1471, 3, 14.93, 44.79, 6, 'Oeste'),\n (DATE '2024-01-01', 2023, 4, 21, 11, DATE '2023-04-21', 105, 1968, 8, 33.50, 268.00, 4, 'Oeste'),\n (DATE '2024-01-01', 2023, 1, 13, 12, DATE '2023-01-13', 107, 1615, 10, 81.50, 815.00, 17, 'Leste'),\n (DATE '2024-01-01', 2023, 9, 3, 13, DATE '2023-09-03', 106, 1140, 3, 26.72, 80.16, 10, 'Sul'),\n (DATE '2024-01-01', 2023, 4, 30, 14, DATE '2023-04-30', 105, 1306, 5, 96.39, 481.95, 20, 'Centro'),\n (DATE '2024-01-01', 2023, 1, 21, 15, DATE '2023-01-21', 108, 1772, 5, 39.25, 196.25, 1, 'Norte'),\n (DATE '2024-01-01', 2023, 5, 31, 16, DATE '2023-05-31', 110, 1226, 7, 79.47, 556.29, 14, 'Oeste'),\n (DATE '2024-01-01', 2023, 8, 20, 17, DATE '2023-08-20', 104, 1668, 3, 49.43, 148.29, 13, 'Leste'),\n (DATE '2024-01-01', 2023, 9, 23, 18, DATE '2023-09-23', 105, 1879, 1, 61.15, 61.15, 16, 'Norte'),\n (DATE '2024-01-01', 2023, 3, 5, 19, DATE '2023-03-05', 101, 1895, 2, 27.39, 54.78, 8, 'Centro'),\n (DATE '2024-01-01', 2023, 5, 24, 20, DATE '2023-05-24', 109, 1608, 8, 36.92, 295.36, 9, 'Sul');",
+    "tags": ["vendas", "tabela"],
     "createdBy": "admin",
     "acl": [
       {

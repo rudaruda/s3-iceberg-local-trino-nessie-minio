@@ -51,7 +51,7 @@ services:
       - .env
     entrypoint: >
       /bin/sh -c "
-      until (/usr/bin/mc config host add minio http://storage:9000 admin admin) do echo '...waiting...' && sleep 1; done;
+      until (/usr/bin/mc config host add minio http://storage:9000 admin password) do echo '...waiting...' && sleep 1; done;
       /usr/bin/mc rm -r --force minio/warehouse;
       /usr/bin/mc mb minio/warehouse;
       /usr/bin/mc mb minio/iceberg;
@@ -70,20 +70,21 @@ services:
     volumes:
       - ./trino-data/catalog/iceberg.properties:/etc/trino/catalog/iceberg.properties
       - ./trino-data/config/log.properties:/etc/trino/log.properties
-      - ./trino-data/config/jvm.config:/etc/trino/jvm.config
+      #- ./trino-data/config/jvm.config:/etc/trino/jvm.config
       - ./trino-data/config/config.properties:/etc/trino/config.properties
       # TRY EXEC FILE .SH... after serivice TRINO activate... but not works
       #- ./trino-data/sql_start.sh:/tmp/sql_start.sh
       #- ./trino-data/sql_start.sql:/tmp/sql_start.sql
       #- ./trino-data/wait-for-it.sh:/tmp/wait-for-it.sh
       #command: /bin/sh -c "until curl -s http://trino:8080/v1/info | grep 'healthy'; do echo 'Aguardando o serviço...'; sleep 5; done; chmod +x /tmp/sql_start.sql /tmp/sql_start.sh; /tmp/sql_start.sh && echo 'Script executado com sucesso!'"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://trino:8080/v1/info"]
-      # test: ["CMD", "nc", "-z", "localhost", "8080"] # outra maneira
-      interval: 15s
-      retries: 3
-      start_period: 15s
-      timeout: 10s
+    ## DESABILITADO: para consumir menos recursos
+    #healthcheck:
+    #  test: ["CMD", "curl", "-f", "http://trino:8080/v1/info"]
+    #  # test: ["CMD", "nc", "-z", "localhost", "8080"] # outra maneira
+    #  interval: 15s
+    #  retries: 2
+    #  start_period: 30s
+    #  timeout: 10s
     depends_on:
       - nessie
   # SQLPad web sql manager for big data
@@ -107,6 +108,7 @@ services:
       #SQLPAD_CONNECTIONS__trinoex__schema: iceberg
     volumes:
       - ./sqlpad-data:/etc/sqlpad/seed-data
+    ## DESABILITADO: para consumir menos recursos
     #depends_on:
     #  trino:
     #    condition: service_started
