@@ -32,7 +32,8 @@ Mesmo assim, vejo aqui já um grande avanço nesse sentido. Acredito que no futu
 # Arquitetura
 ![elementos de arquitetura](./images/arquitetura_s3_iceberg_trino.png)
 
-O **TRINO** é a grande estrela como **Query Processor de Big Data**. Ele se conecta ao **MinIO** para persistir os dados em formato **S3 (armazenamento distribuído)** e o **Nessie** que gerencia o **catalogo** dos arquivos armazenados em formato Iceberg.
+**TRINO** se destaca como **Query Processor de Big Data**. Ele se conecta ao **MinIO** para persistir os dados em formato **S3 (armazenamento distribuído)** e o **Nessie** que gerencia o **catalogo** dos arquivos armazenados em formato Iceberg.
+
 As plataformas/ferramentas que manipulam os dados (**PySpark** e **SQLPad**) também devem se conectar ao **TRINO** para fazer uso da arquitura de Big Data no fomato de arquivos S3 Iceberg.
 E assim, temos de modo democatico recursos do "S3 Iceberg" localmente.
 
@@ -40,14 +41,14 @@ Como o projeto também esta em **Docker** com algum ajuste é totalmente possív
 
 | :city_sunrise: |Aplicação| O que é|
 |-----|:-----:|-------------|
-| <img src="images/minio_icon.png" alt="minio ico" style="width:200px; height:100%"> | **[MinIO](https://min.io/docs/minio/container/operations/installation.html)**| Solução robusta de armazenamento de objetos compatível com o protocolo S3 da AWS para grande volume de dados não estruturados, como arquivos de mídia, logs, backups e dados analíticos.|
-| <img src="images/nessie_icon.png" alt="nessie ico" style="width:200px; height:100%"> | **[Nessie](https://projectnessie.org/)** | Catálogo de dados que oferece versionamento para dados em Lake-Data. Da suporte no armazenamento de arquivos Iceberg. Permite criar branches e tags para dados, ajuda também visualização em relação a organização dos catalogos, schemas e tabelas. |
-| <img src="images/trino_icon.png" alt="trino ico" style="width:200px; height:100%"> | **[Trino](https://trino.io/docs/current/installation/containers.html)** |  Essa é a estrela do show. Mecanisco de consulta de SQL distribuído, permite executar consultar em tempo real sobre diversas fontes de dados NoSQL, bastando apenas adiocionar novos catalogos para acessar novas origens. |
+| <img src="images/minio_icon.png" alt="minio ico" style="width:200px; height:100%"> | **[MinIO](https://min.io/docs/minio/container/operations/installation.html)**| Solução robusta para armazenamento de dados não estruturados, compatível com o protocolo S3 da AWS.|
+| <img src="images/nessie_icon.png" alt="nessie ico" style="width:200px; height:100%"> | **[Nessie](https://projectnessie.org/)** | Ajuda na organização dos catalogos, schemas e tabelas. Oferece versionamento para os objetos, com criação de branches e tags. |
+| <img src="images/trino_icon.png" alt="trino ico" style="width:200px; height:100%"> | **[Trino](https://trino.io/docs/current/installation/containers.html)** |  Nossa estrela do show. Mecanisco de consulta de SQL distribuído, permite executar consultar em tempo real sobre diversas fontes de dados NoSQL. |
 | <img src="images/fastapi_icon.png" alt="fastapi ico" style="width:200px; height:100%"> | **[FastAPI](https://fastapi.tiangolo.com/#example)** | Framework Python, usado para criar APIs RESTful com facilidade e velocidade. |
 | <img src="images/pyspark_icon.png" alt="pyspark ico" style="width:200px; height:100%"> | **[PySpark](https://spark.apache.org/docs/latest/api/python/index.html)** | Interface Python para o Apache Spark, usada para processamento distribuído de grandes volumes de dados em cluster |
 | <img src="images/sqlpad_icon.png" alt="sqlpad ico" style="width:200px; height:100%"> | **[SQLPad](https://getsqlpad.com/en/introduction/)** | Manager de consultas SQL, possui diversos conectores. Permite colaboração de querys e dashborads via interface web|
 | <img src="images/docker_icon.png" alt="docker ico" style="width:200px; height:100%"> | **[Docker](https://www.docker.com/get-started/)** | Plataforma para criar, distribuir e executar aplicações em contêineres isolados.|
-| <img src="images/podman_icon.png" alt="podman ico" style="width:200px; height:100%"> | **[Podman](https://podman.io/get-started)** | Tem o mesmo objetivo do Docker, incluive possui alta compatibilidade (mesmos comandos) que o Docker, porém consume menos recursos de máquina no desenvolvimento local ***(super recomendo!)*** :rocket:.|
+| <img src="images/podman_icon.png" alt="podman ico" style="width:200px; height:100%"> | **[Podman](https://podman.io/get-started)** | Alternativa para executar container em relação ao Docker. Porém consume menos recursos de máquina no desenvolvimento local ***(super recomendo!)*** :rocket:.|
 
 ### Resumo do conjunto...
 
@@ -55,7 +56,7 @@ Como o projeto também esta em **Docker** com algum ajuste é totalmente possív
 
   ![evidencia 03 S3 Iceberg](./images/03-s3-iceberg.png)
 
-  No meu caso, por exemplo, minha máquina tinha apenas 8GB de RAM. E foi possível realizar testes de menor escala para experimentar a tecnologia de processamento distribuído que geralmente exige um hardware mais pesado.
+  No meu caso, por exemplo, minha CPU possui apenas 8GB de RAM. E foi possível realizar testes de menor escala para experimentar a tecnologia de processamento distribuído que geralmente exige um hardware mais pesado.
 
 ### Demais protagonistas
 
@@ -78,43 +79,47 @@ Como o projeto também esta em **Docker** com algum ajuste é totalmente possív
    ```
 
 2. **Leia a documentação em Swagger**
+
   Documentação: [htpp://localhost:8000/docs](htpp://localhost:8000/docs)
 
 3. **Execute os testes disponiveis no Swagger**
+
    É essencial ter resultado como "TUDO OK""
    [IMAGEM GIF dos testes]
 
 4. **Uso com SQLPad**
+
    Acesse http://localhost:3000
    > user `admin`, passord: `admin`
-      
-   E execute  a query de para criar o Schema e Tabela com particionamento em ANO, MES e DIA em formato S3 Iceberg.
-   
-   A query já esta pronta e também irá acrescentar 20 registros na tabela "tb_vendas".
 
-   O script SQL já esta cadastrado no projeto. Basta ir no menu "Querys" e selecionar: "1. Query START!".
-   
-   Para executar, clique no botão "RUN" na parte superior a direita.
-   ![sqlapd create table](./images/sqlpad_create_table.gif)
+   As query já estão armazenadas no projeto e são acesseiveis pelo meno "Querys" na parte superior.
+
+   Execute  "1. Query START!" para criar Schema `db`, Tabela `vendas` (particionada por ANO, MES e DIA) em formato S3 Iceberg e inserir dados.
+   ![sqlapd create table](./images/sqlpad_create_table.gif)  
+
+   Após selecionar a query, clique no botão "RUN" na parte superior a direita, para executar. 
 
    **Visualize o relatório**
-   O script do relatório de vendas por dia também já esta disponivel no projeto.
-   Agora selecione a query: "2. Vendas por dia".
+
+   Agora selecione a query "3. Vendas por dia".
    ![sqlapd vendas](./images/sqlpad_venda_dia.gif)
 
 5. **Monitore as querys executadas no Trino**
    Acesse http://localhost:8080
    > user `admin`
-   
-   [IMAGEM]
+  
+   Todas as querys executadas ficam registras em log no Trino.
+
+   ![trino](./images/trino_navegacao.gif)
 
 6. **Visualize o catalogo Iceberg gerado pelo Nessie**
    Acesse http://localhost:17070
    > user `admin`, password: `password`
    
+   Verifique aqui que o formato da tabela realmente esta como Iceberg. Todas as alterações no catalogo são registradas como commits.
+
    ![nessie](./images/nessie_navegacao.gif)
  
-   `http://localhost:19120/content/main/db/tb_vendas`
 7. **Visualize os arquivos gerado no S3 pelo MinIO**
    > user `admin`, password: `password`
    
