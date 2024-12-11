@@ -80,12 +80,17 @@ Como o projeto também esta em **Docker** com algum ajuste é totalmente possív
 
 2. **Leia a documentação em Swagger**
 
-  Documentação: [htpp://localhost:8000/docs](htpp://localhost:8000/docs)
+   Documentação: [htpp://localhost:8000/docs](htpp://localhost:8000/docs)
+
+   :construction:EM CONSTRUÇÃO!:construction:
 
 3. **Execute os testes disponiveis no Swagger**
 
    É essencial ter resultado como "TUDO OK""
+
    [IMAGEM GIF dos testes]
+
+   :construction:EM CONSTRUÇÃO!:construction:
 
 4. **Uso com SQLPad**
 
