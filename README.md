@@ -128,8 +128,10 @@ Como o projeto também esta em **Docker** com algum ajuste é totalmente possív
 
 
 ## Conclusão
-Como nem tudo são flores... Não foi possível conectar o SPARK diretamente ao NESSIE+MINIO (o que traria maior performance). Embora exista documentação na página dos desenvolvedore. Depois de muitos testes *(acredite! muitos!)*. Concluí que até pode ser uma possíbilidade, entretanto no ambiente local com praticamente 1 core executando em cada aplicação e poquissíma mémoria para esse tipo de aplicação, não foi possivel experimentar os demais cenários com hardware mais potente.
-A pesquisa sobre a solução do S3 iceberg num ambiente local foi que mais me consumiu tempo e esforço. Principalmente porque as ferramentas OPEN SOURCE disponíveis ainda não estão complementa maduradas e são promissoras. Porém ainda existem muitos bugs a serem corrigidos e recursos a serem desenvovidos por isso o uso delas deve ser com cautela. 
+Como nem tudo são flores... Não foi possível conectar o SPARK diretamente ao NESSIE+MINIO (o que traria maior performance). Embora exista documentação na página do desenvolvedor. Depois de muitos testes *(acredite! muitos!)*. Concluí que até pode ser uma possíbilidade, entretanto no ambiente local com praticamente 1 core executando em cada aplicação e poquissíma mémoria para esse tipo de aplicação, não foi possivel experimentar os demais cenários com hardware mais potente. Então foi mais fácil conectar no Trino.
+
+A pesquisa sobre a solução do S3 iceberg num ambiente local foi que mais me consumiu tempo e esforço. Principalmente porque as ferramentas OPEN SOURCE disponíveis ainda não estão complementa maduradas e são promissoras. Porém ainda existem muitos bugs a serem corrigidos e recursos a serem desenvovidos por isso o uso delas deve ser com cautela.
+
 Me diverti! Penso que é conhecimento rico que me provoca pensar em futuros esforços como o de migração de dados considerando o multi-cloud.
 
 ~~Colocar mais diagramas de arquietura com detalhes de cada etapa de conectivide.~~
@@ -138,20 +140,18 @@ Me diverti! Penso que é conhecimento rico que me provoca pensar em futuros esfo
 - https://medium.com/@faruk13/alpine-slim-bullseye-bookworm-noble-differences-in-docker-images-explained-d9aa6efa23ec
 - https://getsqlpad.com/en/configuration/?id=backend-database-management#application-configuration-general
 
-## How install
+#### Comandos de container com PODMAN
 - podman build -t python-alpine .
   * -t atrituto para informar a tag da imagem
 - podman run -it python-alpine
-  -it atriubto para ser interativo
+  * -it atriubto para ser interativo
 - podman run -p 8000:8000 --replace --name python-alpine python-alpine
-  -relace substitui o container caso já existe laguma com esse nome
-
-
-## Monitore
+  * -relace substitui o container caso já existe laguma com esse nome
 - podman stats -a --no-stream 
-
-#### Manutenção of container
-podman ps -a
-podman logs <container_id>
+  * monitora os containers ativos
+- podman ps
+  * lista container disponíveis
+- podman logs <container_id>
+  * visualiza logs do container
 
 
